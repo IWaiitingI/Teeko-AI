@@ -3,7 +3,6 @@ from tkinter import messagebox
 import random
 import math
 import copy
-import sys
 
 def style_button(btn):
     btn.configure(bg="#017cbf", fg="#ffffff", font=("Arial", 12, "bold"), bd=0, relief="flat", padx=10, pady=5)
@@ -24,12 +23,6 @@ DIFFICULTIES = {
     "Facile": 1,
     "Moyen": 3,
     "Difficile": 5
-}
-
-MISTAKE_PROBS = {
-    1: 0.25,
-    3: 0.10,
-    5: 0.0
 }
 
 # ------------------ Classe principale du jeu ------------------
@@ -283,16 +276,6 @@ class TeekoGame:
             if self.show_eval:
                 self._update_labels(eval_text=f"Eval IA: immediate")
             return
-        
-        # joue parfois au hasard en fonction de la difficulté
-        chance_erreur = MISTAKE_PROBS.get(self.get_minimax_depth(), 0.0)
-        if random.random() < chance_erreur:
-            targets = self.get_all_targets(self.board, self.ai_side)
-            if targets:
-                self.apply_target(random.choice(targets), self.ai_side)
-                if self.show_eval:
-                    self._update_labels(eval_text="Eval IA: erreur volontaire")
-                return
 
         # sinon minimax
         move, score = self.minimax(self.board, depth=self.get_minimax_depth(), alpha=-math.inf, beta=math.inf, maximizing=True, perspective_player=self.ai_side)
@@ -618,25 +601,13 @@ class TeekoGameAIvsAI(TeekoGame):
             if game_over:
                 return
         else:
-            # ajout de chance de coup aléatoire
-            chance_erreur = MISTAKE_PROBS.get(depth, 0.0)
-            played_randomly = False
-            if random.random() < chance_erreur:
-                targets = self.get_all_targets(self.board, current_ai)
-                if targets:
-                    random_target = random.choice(targets)
-                    game_over = self.apply_target(random_target, current_ai)
-                    if game_over: return
-                    played_randomly = True
-
             # Utiliser minimax
-            if not played_randomly:
-                maximizing = True  # Tjrs maximiser pr joueur actuel
-                move, _ = self.minimax(self.board, depth, -math.inf, math.inf, maximizing=maximizing, perspective_player=current_ai)
-                if move:
-                    game_over = self.apply_target(move, current_ai)
-                    if game_over:
-                        return
+            maximizing = True  # Tjrs maximiser pr joueur actuel
+            move, _ = self.minimax(self.board, depth, -math.inf, math.inf, maximizing=maximizing, perspective_player=current_ai)
+            if move:
+                game_over = self.apply_target(move, current_ai)
+                if game_over:
+                    return
 
         # Changer tour manuellement
         self.turn = PLAYER1 if self.turn==PLAYER2 else PLAYER2
@@ -709,17 +680,13 @@ class TeekoMenu:
         btn_rules.pack(pady=6)
         style_button(btn_rules)
 
-        btn_quit = tk.Button(self.root, text="Quitter", command=self.quit_app)
+        btn_quit = tk.Button(self.root, text="Quitter", command=self.root.quit)
         btn_quit.pack(pady=6)
         style_button(btn_quit)
 
         self.root.configure(bg="#f0f0f0")
 
         self.root.mainloop()
-
-    def quit_app(self):
-        self.root.destroy()
-        sys.exit()
 
     def start_pvp(self):
         self.root.destroy()
