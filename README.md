@@ -238,8 +238,5 @@ Modify the `SIZE` constant (currently 5)
 
 ## 📝 Author
 
-Project completed as part of the **IA41** course at **UTBM** (University of Technology of Belfort-Montbéliard)
+Project completed by Quentin RICCI, Jean-Luc CHUMONT and Ahmed OUNISSI
 
-## 📄 License
-
-Academic project - UTBM 2025
